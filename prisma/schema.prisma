@@ -206,6 +206,8 @@ model Organization {
   subscription   Subscription?
   creditAccount  CreditAccount?
   usageRecords   UsageRecord[]
+  payments       Payment[]
+  invoices       Invoice[]
   apiKeys        ApiKey[]
   auditLogs      AuditLog[]
 
@@ -452,20 +454,23 @@ model Lead {
 }
 
 model Plan {
-  id                String         @id @default(cuid())
-  code              String         @unique
-  name              String
-  description       String
-  monthlyPriceCents Int
-  yearlyPriceCents  Int
-  currency          String         @default("USD")
-  isActive          Boolean        @default(true)
-  sortOrder         Int            @default(0)
-  limits            Json
-  features          Json
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @updatedAt
-  subscriptions     Subscription[]
+  id                   String         @id @default(cuid())
+  code                 String         @unique
+  name                 String
+  description          String
+  monthlyPriceCents    Int
+  yearlyPriceCents     Int
+  currency             String         @default("USD")
+  isActive             Boolean        @default(true)
+  sortOrder            Int            @default(0)
+  monthlyCredits       Int            @default(0)
+  stripeMonthlyPriceId String?
+  stripeYearlyPriceId  String?
+  limits               Json
+  features             Json
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  subscriptions        Subscription[]
 }
 
 model Subscription {
@@ -475,6 +480,7 @@ model Subscription {
   status                 SubscriptionStatus @default(TRIALING)
   billingInterval        BillingInterval    @default(MONTHLY)
   provider               PaymentProvider    @default(STRIPE)
+  providerCustomerId     String?
   providerSubscriptionId String?            @unique
   currentPeriodStart     DateTime?
   currentPeriodEnd       DateTime?
@@ -499,7 +505,9 @@ model Payment {
   currency          String          @default("USD")
   idempotencyKey    String          @unique
   rawEventId        String?
+  failureReason     String?
   createdAt         DateTime        @default(now())
+  organization      Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   subscription      Subscription?   @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
 
   @@index([organizationId])
@@ -517,6 +525,7 @@ model Invoice {
   pdfUrl            String?
   status            String
   createdAt         DateTime      @default(now())
+  organization      Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   subscription      Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
 }
 

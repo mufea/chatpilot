@@ -9,6 +9,7 @@ import { generateToken, hashToken, slugify } from "@/lib/crypto";
 import { invitationEmail, sendEmail } from "@/lib/email/send";
 import { appConfig } from "@/lib/config";
 import { canAssignRole, canManageMembers, hasOrgRole } from "@/lib/org/access";
+import { assertCanCreateResource } from "@/lib/billing/entitlements";
 import { DEFAULT_PLANS } from "@/lib/plans";
 
 export class OrgError extends Error {
@@ -160,6 +161,11 @@ export async function inviteMember(
   if (existingUser?.memberships.length) {
     throw new OrgError("That person is already a member of this organization.");
   }
+
+  const memberCount = await db.organizationMember.count({
+    where: { organizationId: input.organizationId },
+  });
+  await assertCanCreateResource(db, input.organizationId, "teamMembers", memberCount);
 
   await db.invitation.updateMany({
     where: {
@@ -333,16 +339,7 @@ export async function ensureDefaultPlans(db: PrismaClient) {
   for (const plan of DEFAULT_PLANS) {
     await db.plan.upsert({
       where: { code: plan.code },
-      update: {
-        name: plan.name,
-        description: plan.description,
-        monthlyPriceCents: plan.monthlyPriceCents,
-        yearlyPriceCents: plan.yearlyPriceCents,
-        currency: plan.currency,
-        sortOrder: plan.sortOrder,
-        limits: plan.limits as unknown as Prisma.InputJsonValue,
-        features: plan.features as unknown as Prisma.InputJsonValue,
-      },
+      update: {},
       create: {
         code: plan.code,
         name: plan.name,
@@ -351,6 +348,7 @@ export async function ensureDefaultPlans(db: PrismaClient) {
         yearlyPriceCents: plan.yearlyPriceCents,
         currency: plan.currency,
         sortOrder: plan.sortOrder,
+        monthlyCredits: plan.monthlyCredits,
         limits: plan.limits as unknown as Prisma.InputJsonValue,
         features: plan.features as unknown as Prisma.InputJsonValue,
       },

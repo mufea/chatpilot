@@ -2,6 +2,7 @@ import type { PrismaClient } from "@prisma/client";
 import { AIError } from "@/lib/ai/errors";
 import { sanitizeUserMessage } from "@/lib/ai/prompts";
 import { assertConversationCapacity, runAssistantTurn } from "@/lib/chatbot/turn";
+import { assertCanUseAi } from "@/lib/billing/entitlements";
 import { WidgetError } from "@/lib/widget/errors";
 import { requireVisitorSession } from "@/lib/widget/session";
 import type { Citation } from "@/lib/knowledge/types";
@@ -34,6 +35,7 @@ export async function* widgetChat(
   if (!userText) {
     throw new AIError("invalid_request", "Message cannot be empty.", false);
   }
+  await assertCanUseAi(db, chatbot.organizationId);
 
   let conversation = await db.conversation.findFirst({
     where: {

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { AIError } from "@/lib/ai/errors";
 import { CreditError } from "@/lib/ai/credits";
+import { BillingError } from "@/lib/billing/errors";
 import { getCurrentAuth } from "@/lib/auth/session";
 import { playChatbot } from "@/lib/chatbot/play";
 import { ChatbotError } from "@/lib/chatbot/service";
@@ -51,6 +52,8 @@ export async function POST(
       } catch (error) {
         if (error instanceof CreditError) {
           send({ type: "error", code: "credits", message: error.message });
+        } else if (error instanceof BillingError) {
+          send({ type: "error", code: error.code, message: error.message });
         } else if (error instanceof AIError || error instanceof ChatbotError) {
           send({ type: "error", code: "code" in error ? error.code : "chatbot", message: error.message });
         } else {

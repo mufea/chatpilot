@@ -7,6 +7,7 @@ import {
   runAssistantTurn,
   type AssistantTurnDelta,
 } from "@/lib/chatbot/turn";
+import { assertCanUseAi } from "@/lib/billing/entitlements";
 import { requireMembership } from "@/lib/org/service";
 
 export type PlayDelta =
@@ -25,6 +26,7 @@ export async function* playChatbot(
   },
 ): AsyncGenerator<PlayDelta> {
   await requireMembership(db, input.actorUserId, input.organizationId);
+  await assertCanUseAi(db, input.organizationId);
   const chatbot = await getChatbotForOrg(db, input.organizationId, input.chatbotId);
   const config = chatbot.configuration;
   if (!config) {

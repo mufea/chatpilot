@@ -68,6 +68,7 @@ export default async function DashboardPage() {
           <li>Send playground messages. Usage and credits are recorded from actual tokens.</li>
           <li>Ingest documents or public URLs, attach the knowledge base to a chatbot, and ask in the playground.</li>
           <li>Add encrypted OpenAI, Gemini, or Anthropic keys in Settings, or keep AI_MOCK_MODE on.</li>
+          <li>Review usage on Analytics. Upgrade only after a verified Stripe or Midtrans webhook.</li>
         </ul>
         <div className="mt-5 flex flex-wrap gap-3">
           <Link href="/chatbots" className={cn(buttonVariants())}>
@@ -75,6 +76,9 @@ export default async function DashboardPage() {
           </Link>
           <Link href="/knowledge" className={cn(buttonVariants({ variant: "outline" }))}>
             Knowledge
+          </Link>
+          <Link href="/billing" className={cn(buttonVariants({ variant: "outline" }))}>
+            Billing
           </Link>
         </div>
       </div>

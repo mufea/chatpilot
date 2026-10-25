@@ -1,5 +1,6 @@
 import { AIError } from "@/lib/ai/errors";
 import { CreditError } from "@/lib/ai/credits";
+import { BillingError } from "@/lib/billing/errors";
 import { prisma } from "@/lib/db";
 import { consumeRateLimit } from "@/lib/rate-limit";
 import { widgetChatSchema } from "@/lib/validators";
@@ -71,6 +72,8 @@ export async function POST(request: Request) {
       } catch (error) {
         if (error instanceof CreditError) {
           send({ type: "error", code: "credits", message: error.message });
+        } else if (error instanceof BillingError) {
+          send({ type: "error", code: error.code, message: error.message });
         } else if (error instanceof WidgetError || error instanceof AIError) {
           send({ type: "error", code: "code" in error ? error.code : "widget", message: error.message });
         } else {

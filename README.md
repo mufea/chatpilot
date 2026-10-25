@@ -1,12 +1,12 @@
 # ChatPilot AI
 
-Multi-tenant AI chatbot SaaS for businesses, ecommerce stores, agencies, and individuals. This repository is being built in phases. **Phase 4 is implemented:** a versioned, embeddable website widget with Shadow DOM style isolation, visitor sessions, domain allowlisting, rate limiting, streaming replies, and server-side AI access.
+Multi-tenant AI chatbot SaaS for businesses, ecommerce stores, agencies, and individuals. This repository is being built in phases. **Billing, admin, analytics, and release are implemented** on top of the Phase 4 widget. Plans, credits, and entitlements are enforced on the server. Stripe and Midtrans only change a subscription after a verified webhook.
 
-Later phases add the inbox, Stripe/Midtrans billing, analytics, and the public API. Those screens remain honest placeholders.
+Inbox and the versioned public API are not shipped.
 
 ## Phase 0 audit
 
-The starting repository contained only the empty root commit. Phase 1 added identity and tenancy. Phase 2 added the builder and playground. Phase 3 added retrieval. Phase 4 adds the public website widget.
+The starting repository contained only the empty root commit. Phase 1 added identity and tenancy. Phase 2 added the builder and playground. Phase 3 added retrieval. Phase 4 added the public website widget. Later work adds billing, admin controls, analytics, and deployment docs.
 
 - Next.js App Router, TypeScript (strict), Tailwind CSS v4, shadcn/ui, Lucide
 - Next.js server actions and route handlers
@@ -15,7 +15,7 @@ The starting repository contained only the empty root commit. Phase 1 added iden
 - OpenAI, Gemini, and Anthropic adapters behind one interface
 - Deterministic mock adapter for tests and `AI_MOCK_MODE`
 
-## What works in Phase 4
+## What works now
 
 - Everything from Phase 1 (register, sessions, orgs, invites, admin, health)
 - Create, configure, publish, unpublish, duplicate, and soft-delete chatbots
@@ -38,10 +38,17 @@ The starting repository contained only the empty root commit. Phase 1 added iden
 - Visitor sessions with hashed tokens, isolated conversations, and stricter rate limits
 - Embed snippet on the chatbot editor; empty allowlist or draft status blocks public use
 - Independent Harbor Books demo site on port 43211 (`npm run widget-demo`)
+- Configurable subscription plans (admin-editable; seed does not overwrite edits)
+- Atomic credit ledger with idempotent grants, purchases, and reservations
+- Server-side entitlements for AI use, monthly messages, team size, and branding
+- Stripe Checkout plus signature-verified webhooks; duplicate events are ignored
+- Optional Midtrans Snap/notifications with SHA-512 verification
+- Workspace analytics and platform audit logs
+- Deployment runbook in `DEPLOY.md`
 
 ## What is not complete
 
-Do not treat these as shipped: inbox/handoff, Stripe/Midtrans checkout, or the versioned public API.
+Do not treat these as shipped: inbox/human handoff, or the versioned public API. Live card capture is not claimed until a signed provider webhook has been processed in that environment.
 
 ## Local setup
 
@@ -138,16 +145,13 @@ LIVE_AI_TESTS=true AI_MOCK_MODE=false OPENAI_API_KEY=... npm test
 
 Live cases skip when `LIVE_AI_TESTS` is unset or the matching key is missing.
 
+### Billing
+
+`/billing` starts Stripe or Midtrans checkout only when server keys exist. `/api/billing/stripe/webhook` verifies `Stripe-Signature`. `/api/billing/midtrans/notification` verifies SHA-512. Duplicate `WebhookEvent` rows are ignored. Failed payments write `FAILED` and set the subscription `PAST_DUE` without granting credits. See `DEPLOY.md`.
+
 ## Deployment
 
-The app is a Node.js Next.js server. It needs:
-
-- Managed PostgreSQL
-- Environment variables from `.env.example` (never commit secrets)
-- `npx prisma migrate deploy` before or during release
-- `npm run build` and `npm run start`
-
-Vercel, Fly, Render, or a container from `Dockerfile` all work. Redis and object storage are reserved for later phases. A startup configuration check is exposed at `/api/health` and never prints secret values.
+Follow `DEPLOY.md`. The app is a Node.js Next.js server. It needs managed PostgreSQL, `npx prisma migrate deploy`, and `npm run build` before `npm run start`. `/api/health` reports configuration without printing secrets and sets `billing.liveVerified` to false until a real provider webhook is verified.
 
 ## Backup
 
@@ -158,12 +162,16 @@ Use `pg_dump` / `pg_restore` on the PostgreSQL database. Uploaded documents are 
 - `app/` routes, server actions, and health endpoints
 - `app/api/chatbots/[id]/play` SSE playground
 - `app/api/widget/v1` public config, visitor session, and SSE chat
+- `app/api/billing` Stripe/Midtrans checkout webhooks
 - `public/widget/v1.js` Shadow DOM widget (`/widget.js` aliases it)
 - `lib/ai` provider adapters, credentials, credits, and routing
+- `lib/billing` entitlements, ledger grants, and verified webhooks
+- `lib/analytics` tenant-scoped usage and audit reads
 - `lib/chatbot` CRUD and playground orchestration
 - `lib/widget` origin checks, public config, visitor sessions
 - `lib/knowledge` ingestion, SSRF, jobs, embeddings, and retrieval
 - `lib/auth` and `lib/org` authorization used by both the UI and tests
 - `widget-demo/` independent storefront used for embed verification
+- `DEPLOY.md` production release runbook
 - `prisma/schema.prisma` tenant-aware models
-- `tests/` Node.js test runner coverage for auth, isolation, chatbots, adapters, knowledge, and the widget
+- `tests/` Node.js test runner coverage including billing webhooks and entitlements

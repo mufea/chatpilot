@@ -15,6 +15,10 @@ const db = testDb();
 before(async () => {
   await resetDb(db);
   await ensureDefaultPlans(db);
+  await db.plan.update({
+    where: { code: "FREE" },
+    data: { limits: { chatbots: 1, knowledgeBases: 1, monthlyMessages: 200, teamMembers: 3, documentsPerKnowledgeBase: 5 } },
+  });
 });
 
 after(async () => {

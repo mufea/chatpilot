@@ -3,6 +3,7 @@ import { writeAuditLog } from "@/lib/audit";
 import { defaultModelFor, getModelDefinition } from "@/lib/ai/models";
 import { isProviderId, type ProviderId } from "@/lib/ai/types";
 import { MAX_SYSTEM_INSTRUCTION_CHARS } from "@/lib/ai/prompts";
+import { getEntitlements } from "@/lib/billing/entitlements";
 import { requireMembership } from "@/lib/org/service";
 import { DEFAULT_PLANS, type PlanLimits } from "@/lib/plans";
 
@@ -170,6 +171,12 @@ export async function updateChatbot(
   await requireMembership(db, input.actorUserId, input.organizationId, OrganizationRole.ADMIN);
   const chatbot = await getChatbotForOrg(db, input.organizationId, input.chatbotId);
   const data = normalizeConfig(input.data);
+  if (data.removeBranding) {
+    const entitlements = await getEntitlements(db, input.organizationId);
+    if (!entitlements.canRemoveBranding) {
+      data.removeBranding = false;
+    }
+  }
   const updated = await db.chatbot.update({
     where: { id: chatbot.id },
     data: {

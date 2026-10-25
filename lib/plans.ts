@@ -14,6 +14,7 @@ export type PlanDefinition = {
   yearlyPriceCents: number;
   currency: string;
   sortOrder: number;
+  monthlyCredits: number;
   limits: PlanLimits;
   features: string[];
   highlighted?: boolean;
@@ -28,6 +29,7 @@ export const DEFAULT_PLANS: PlanDefinition[] = [
     yearlyPriceCents: 0,
     currency: "USD",
     sortOrder: 10,
+    monthlyCredits: 200,
     limits: {
       chatbots: 1,
       knowledgeBases: 1,
@@ -51,6 +53,7 @@ export const DEFAULT_PLANS: PlanDefinition[] = [
     yearlyPriceCents: 39000,
     currency: "USD",
     sortOrder: 20,
+    monthlyCredits: 3000,
     limits: {
       chatbots: 3,
       knowledgeBases: 3,
@@ -74,6 +77,7 @@ export const DEFAULT_PLANS: PlanDefinition[] = [
     yearlyPriceCents: 99000,
     currency: "USD",
     sortOrder: 30,
+    monthlyCredits: 20000,
     highlighted: true,
     limits: {
       chatbots: 10,
@@ -100,6 +104,7 @@ export const DEFAULT_PLANS: PlanDefinition[] = [
     yearlyPriceCents: 249000,
     currency: "USD",
     sortOrder: 40,
+    monthlyCredits: 100000,
     limits: {
       chatbots: 50,
       knowledgeBases: 50,

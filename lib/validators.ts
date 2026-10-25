@@ -119,6 +119,35 @@ export const urlDocumentSchema = z.object({
   sitemap: z.string().optional(),
 });
 
+export const checkoutSchema = z.object({
+  planCode: z.enum(["STARTER", "PRO", "BUSINESS"]),
+  interval: z.enum(["MONTHLY", "YEARLY"]),
+  provider: z.enum(["STRIPE", "MIDTRANS"]),
+});
+
+export const adminPlanSchema = z.object({
+  planId: z.string().min(8),
+  name: z.string().trim().min(2).max(80),
+  description: z.string().trim().min(2).max(240),
+  monthlyPriceCents: z.coerce.number().int().min(0).max(10_000_000),
+  yearlyPriceCents: z.coerce.number().int().min(0).max(10_000_000),
+  monthlyCredits: z.coerce.number().int().min(0).max(10_000_000),
+  isActive: z.string().optional(),
+  stripeMonthlyPriceId: z.string().trim().max(120).optional(),
+  stripeYearlyPriceId: z.string().trim().max(120).optional(),
+  chatbots: z.coerce.number().int().min(1).max(1000),
+  knowledgeBases: z.coerce.number().int().min(1).max(1000),
+  monthlyMessages: z.coerce.number().int().min(1).max(10_000_000),
+  teamMembers: z.coerce.number().int().min(1).max(1000),
+  documentsPerKnowledgeBase: z.coerce.number().int().min(1).max(10000),
+});
+
+export const adminCreditSchema = z.object({
+  organizationId: z.string().min(8),
+  amount: z.coerce.number().int().min(-1_000_000).max(1_000_000),
+  reason: z.string().trim().min(2).max(160),
+});
+
 export type FormState = {
   ok?: boolean;
   message?: string;

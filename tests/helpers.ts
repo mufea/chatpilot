@@ -32,6 +32,9 @@ export async function resetDb(db: PrismaClient) {
     TRUNCATE TABLE
       "OutboundEmail",
       "AuditLog",
+      "WebhookEvent",
+      "Payment",
+      "Invoice",
       "UsageRecord",
       "CreditLedgerEntry",
       "CreditAccount",

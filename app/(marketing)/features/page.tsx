@@ -22,13 +22,16 @@ const groups = [
       "Versioned Shadow DOM website widget with isolated styles",
       "Visitor sessions, domain allowlisting, and widget rate limits",
       "Public chatbot ids that never expose provider credentials",
+      "Configurable plans, atomic credit ledger, and server-side entitlements",
+      "Stripe checkout and signature-verified webhooks",
+      "Optional Midtrans notifications with SHA-512 verification",
+      "Workspace analytics and platform audit logs",
     ],
   },
   {
     title: "Designed, not yet shipped",
     items: [
       "Live inbox and human handoff",
-      "Stripe and Midtrans billing",
       "Versioned public API with hashed API keys",
     ],
   },

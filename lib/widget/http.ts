@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { AIError } from "@/lib/ai/errors";
 import { CreditError } from "@/lib/ai/credits";
+import { BillingError } from "@/lib/billing/errors";
 import { WidgetError } from "@/lib/widget/errors";
 import { corsHeaders, resolveWidgetCors } from "@/lib/widget/cors";
 import { prisma } from "@/lib/db";
@@ -25,6 +26,9 @@ export function widgetErrorResponse(error: unknown, origin: string | null, allow
   }
   if (error instanceof CreditError) {
     return widgetJson({ error: error.message, code: "credits" }, 402, origin, allowed);
+  }
+  if (error instanceof BillingError) {
+    return widgetJson({ error: error.message, code: error.code }, error.status, origin, allowed);
   }
   if (error instanceof AIError) {
     return widgetJson({ error: error.message, code: error.code }, error.status ?? 400, origin, allowed);

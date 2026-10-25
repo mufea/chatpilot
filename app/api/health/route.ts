@@ -17,7 +17,7 @@ export async function GET() {
   return NextResponse.json({
     status: report.ok ? "ok" : "degraded",
     service: "chatpilot-web",
-    phase: 4,
+    phase: 7,
     ai: {
       mockMode: appConfig.aiMockMode,
       platformKeys: appConfig.platformKeysConfigured,
@@ -30,6 +30,12 @@ export async function GET() {
       version: "v1",
       script: "/widget/v1.js",
       alias: "/widget.js",
+    },
+    billing: {
+      stripeConfigured: appConfig.billing.stripeConfigured,
+      stripeWebhookConfigured: appConfig.billing.stripeWebhookConfigured,
+      midtransConfigured: appConfig.billing.midtransConfigured,
+      liveVerified: false,
     },
     config: {
       ok: report.ok,

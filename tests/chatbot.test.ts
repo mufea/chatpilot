@@ -245,6 +245,10 @@ test("agents cannot mutate chatbots", async () => {
   await resetDb(db);
   await ensureDefaultPlans(db);
   const owner = await ownerWorkspace("owner-agent@example.com", "Agent Org");
+  await db.plan.update({
+    where: { code: "FREE" },
+    data: { limits: { chatbots: 1, knowledgeBases: 1, monthlyMessages: 200, teamMembers: 3, documentsPerKnowledgeBase: 5 } },
+  });
   const agent = await registerUser(db, {
     name: "Agent User",
     email: "agent-bot@example.com",

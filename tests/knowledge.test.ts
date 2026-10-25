@@ -70,6 +70,10 @@ test("agents cannot create knowledge bases", async () => {
   await resetDb(db);
   await ensureDefaultPlans(db);
   const owner = await workspace("kb-owner@example.com", "Owner KB");
+  await db.plan.update({
+    where: { code: "FREE" },
+    data: { limits: { chatbots: 1, knowledgeBases: 1, monthlyMessages: 200, teamMembers: 3, documentsPerKnowledgeBase: 5 } },
+  });
   const agent = await registerUser(db, {
     name: "Agent",
     email: "kb-agent@example.com",

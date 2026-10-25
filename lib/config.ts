@@ -28,6 +28,15 @@ const envSchema = z.object({
   OPENAI_API_KEY: z.string().optional(),
   GOOGLE_GENERATIVE_AI_API_KEY: z.string().optional(),
   ANTHROPIC_API_KEY: z.string().optional(),
+  STRIPE_SECRET_KEY: z.string().optional(),
+  STRIPE_WEBHOOK_SECRET: z.string().optional(),
+  STRIPE_PUBLISHABLE_KEY: z.string().optional(),
+  MIDTRANS_SERVER_KEY: z.string().optional(),
+  MIDTRANS_CLIENT_KEY: z.string().optional(),
+  MIDTRANS_IS_PRODUCTION: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((value) => value === "true"),
 });
 
 export type AppConfig = {
@@ -57,6 +66,12 @@ export type AppConfig = {
     gemini: boolean;
     anthropic: boolean;
   };
+  billing: {
+    stripeConfigured: boolean;
+    stripeWebhookConfigured: boolean;
+    midtransConfigured: boolean;
+    midtransProduction: boolean;
+  };
 };
 
 function parseEnv(): AppConfig {
@@ -82,6 +97,12 @@ function parseEnv(): AppConfig {
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     GOOGLE_GENERATIVE_AI_API_KEY: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+    STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+    STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
+    MIDTRANS_SERVER_KEY: process.env.MIDTRANS_SERVER_KEY,
+    MIDTRANS_CLIENT_KEY: process.env.MIDTRANS_CLIENT_KEY,
+    MIDTRANS_IS_PRODUCTION: process.env.MIDTRANS_IS_PRODUCTION,
   });
 
   const googleOAuthEnabled = Boolean(
@@ -118,6 +139,12 @@ function parseEnv(): AppConfig {
       openai: Boolean(parsed.OPENAI_API_KEY?.trim()),
       gemini: Boolean(parsed.GOOGLE_GENERATIVE_AI_API_KEY?.trim()),
       anthropic: Boolean(parsed.ANTHROPIC_API_KEY?.trim()),
+    },
+    billing: {
+      stripeConfigured: Boolean(parsed.STRIPE_SECRET_KEY?.trim()),
+      stripeWebhookConfigured: Boolean(parsed.STRIPE_WEBHOOK_SECRET?.trim()),
+      midtransConfigured: Boolean(parsed.MIDTRANS_SERVER_KEY?.trim()),
+      midtransProduction: parsed.MIDTRANS_IS_PRODUCTION,
     },
   };
 }
@@ -191,6 +218,22 @@ export function collectConfigIssues(config: AppConfig = appConfig): ConfigIssue[
       key: "AI_PROVIDER_KEYS",
       level: "warning",
       message: "No platform AI keys are set. Workspaces must add their own encrypted keys to chat.",
+    });
+  }
+
+  if (config.nodeEnv === "production" && !config.billing.stripeConfigured && !config.billing.midtransConfigured) {
+    issues.push({
+      key: "BILLING_KEYS",
+      level: "warning",
+      message: "No Stripe or Midtrans server key is set. Checkout stays disabled until keys are present and webhooks are verified.",
+    });
+  }
+
+  if (config.billing.stripeConfigured && !config.billing.stripeWebhookConfigured) {
+    issues.push({
+      key: "STRIPE_WEBHOOK_SECRET",
+      level: "warning",
+      message: "Stripe secret is set but STRIPE_WEBHOOK_SECRET is missing. Webhooks will be rejected.",
     });
   }
 

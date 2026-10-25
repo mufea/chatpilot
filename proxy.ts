@@ -8,6 +8,7 @@ const PROTECTED_PREFIXES = [
   "/chatbots",
   "/knowledge",
   "/inbox",
+  "/analytics",
   "/billing",
 ];
 
@@ -39,6 +40,7 @@ export const config = {
     "/chatbots/:path*",
     "/knowledge/:path*",
     "/inbox/:path*",
+    "/analytics/:path*",
     "/billing/:path*",
     "/sign-in",
     "/sign-up",

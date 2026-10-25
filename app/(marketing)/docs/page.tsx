@@ -7,9 +7,8 @@ export default function DocsPage() {
     <div className="mx-auto w-full max-w-3xl px-4 py-16">
       <h1 className="text-4xl font-semibold tracking-tight">Documentation</h1>
       <p className="mt-4 text-muted-foreground">
-        Phase 4 covers the versioned website widget: Shadow DOM isolation, visitor sessions,
-        domain allowlisting, rate limits, and server-side model access. Inbox, billing, and
-        the public API remain later work.
+        Billing, admin, analytics, and release docs are implemented. Plans, credits, and
+        entitlements are enforced on the server. Inbox and the public API remain later work.
       </p>
       <section className="mt-10 space-y-4">
         <h2 className="text-2xl font-semibold">Local development</h2>
@@ -72,6 +71,17 @@ export default function DocsPage() {
         <p className="text-sm text-muted-foreground">
           Independent storefront for local checks: <code>npm run widget-demo</code> serves
           Harbor Books on port 43211 against the app on 43180.
+        </p>
+      </section>
+      <section className="mt-10 space-y-4">
+        <h2 className="text-2xl font-semibold">Billing</h2>
+        <p className="text-sm text-muted-foreground">
+          Paid plans start from <code>/billing</code>. Stripe Checkout and Midtrans Snap only run
+          when server keys exist. A successful browser return does not change the plan.{" "}
+          <code>/api/billing/stripe/webhook</code> and <code>/api/billing/midtrans/notification</code>{" "}
+          verify signatures, store <code>WebhookEvent</code> rows, and ignore duplicates. Failed
+          payments mark the subscription past due and grant no credits. Live capture is not claimed
+          unless those webhooks have been verified against the provider.
         </p>
       </section>
     </div>

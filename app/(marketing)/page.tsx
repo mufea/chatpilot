@@ -23,7 +23,7 @@ const benefits = [
   },
   {
     title: "Bill on usage you can audit",
-    body: "Plans, credit ledgers, and webhook events are modeled now. Entitlements will change only after verified payment events.",
+    body: "Plans, credit ledgers, and webhook events are live. Entitlements change only after a verified Stripe or Midtrans event.",
     icon: Sparkles,
   },
 ];

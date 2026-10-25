@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
+  BarChart3,
   Bot,
   CreditCard,
   Inbox,
@@ -22,6 +23,7 @@ const NAV = [
   { href: "/chatbots", label: "Chatbots", icon: Bot },
   { href: "/knowledge", label: "Knowledge", icon: Library },
   { href: "/inbox", label: "Inbox", icon: Inbox },
+  { href: "/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/billing", label: "Billing", icon: CreditCard },
   { href: "/settings/organization", label: "Settings", icon: Settings },
 ];
