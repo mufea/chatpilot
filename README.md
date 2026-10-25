@@ -175,3 +175,4 @@ Use `pg_dump` / `pg_restore` on the PostgreSQL database. Uploaded documents are 
 - `DEPLOY.md` production release runbook
 - `prisma/schema.prisma` tenant-aware models
 - `tests/` Node.js test runner coverage including billing webhooks and entitlements
+# chatpilot
