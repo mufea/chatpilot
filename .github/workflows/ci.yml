@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: chatpilot
+          POSTGRES_PASSWORD: chatpilot_dev
+          POSTGRES_DB: chatpilot_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U chatpilot"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://chatpilot:chatpilot_dev@127.0.0.1:5432/chatpilot_test
+      TEST_DATABASE_URL: postgresql://chatpilot:chatpilot_dev@127.0.0.1:5432/chatpilot_test
+      NODE_ENV: test
+      EMAIL_DELIVERY: console
+      APP_URL: http://127.0.0.1:43180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx prisma migrate deploy
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
