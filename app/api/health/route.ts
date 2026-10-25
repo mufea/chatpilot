@@ -1,16 +1,30 @@
 import { NextResponse } from "next/server";
 import { appConfig } from "@/lib/config";
+import { prisma } from "@/lib/db";
 import { formatStartupReport } from "@/lib/startup-check";
 
 export async function GET() {
   const report = formatStartupReport();
+  let pgvector = false;
+  try {
+    const rows = await prisma.$queryRaw<Array<{ extname: string }>>`
+      SELECT extname FROM pg_extension WHERE extname = 'vector'
+    `;
+    pgvector = rows.length > 0;
+  } catch {
+    pgvector = false;
+  }
   return NextResponse.json({
     status: report.ok ? "ok" : "degraded",
     service: "chatpilot-web",
-    phase: 2,
+    phase: 3,
     ai: {
       mockMode: appConfig.aiMockMode,
       platformKeys: appConfig.platformKeysConfigured,
+    },
+    rag: {
+      pgvector,
+      storage: process.env.STORAGE_DRIVER || "local",
     },
     config: {
       ok: report.ok,

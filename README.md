@@ -1,12 +1,12 @@
 # ChatPilot AI
 
-Multi-tenant AI chatbot SaaS for businesses, ecommerce stores, agencies, and individuals. This repository is being built in phases. **Phase 2 is implemented:** chatbot CRUD, a signed-in playground, provider-independent adapters, encrypted workspace keys, streaming where the vendor supports it, and actual usage tracking.
+Multi-tenant AI chatbot SaaS for businesses, ecommerce stores, agencies, and individuals. This repository is being built in phases. **Phase 3 is implemented:** knowledge ingestion, SSRF-safe crawling, background processing, pgvector retrieval, grounded playground answers, and source citations.
 
-Later phases add RAG, the embeddable widget, inbox, Stripe/Midtrans billing, analytics, and the public API. Those screens remain honest placeholders.
+Later phases add the embeddable widget, inbox, Stripe/Midtrans billing, analytics, and the public API. Those screens remain honest placeholders.
 
 ## Phase 0 audit
 
-The starting repository contained only the empty root commit. Phase 1 added identity, tenancy, and the public site. Phase 2 adds the builder and live model path on that foundation.
+The starting repository contained only the empty root commit. Phase 1 added identity and tenancy. Phase 2 added the builder and playground. Phase 3 adds retrieval.
 
 - Next.js App Router, TypeScript (strict), Tailwind CSS v4, shadcn/ui, Lucide
 - Next.js server actions and route handlers
@@ -15,7 +15,7 @@ The starting repository contained only the empty root commit. Phase 1 added iden
 - OpenAI, Gemini, and Anthropic adapters behind one interface
 - Deterministic mock adapter for tests and `AI_MOCK_MODE`
 
-## What works in Phase 2
+## What works in Phase 3
 
 - Everything from Phase 1 (register, sessions, orgs, invites, admin, health)
 - Create, configure, publish, unpublish, duplicate, and soft-delete chatbots
@@ -27,10 +27,16 @@ The starting repository contained only the empty root commit. Phase 1 added iden
 - Usage records written per successful request
 - Email verification required before publish
 - Agents can view and playground; only owners and admins can mutate
+- Knowledge bases with file, paste, FAQ, URL, and sitemap ingestion
+- SSRF protection (private, loopback, link-local, and credentialed URLs are rejected)
+- Background jobs with retry and per-document status
+- Deterministic mock embeddings plus OpenAI/Gemini embeddings when live keys exist
+- pgvector cosine retrieval scoped to the chatbot's attached knowledge bases
+- Grounded playground replies with stored source citations
 
 ## What is not complete
 
-Do not treat these as shipped: document ingestion, RAG, the website widget, inbox/handoff, Stripe/Midtrans checkout, or the versioned public API.
+Do not treat these as shipped: the website widget, inbox/handoff, Stripe/Midtrans checkout, or the versioned public API.
 
 ## Local setup
 
@@ -82,6 +88,10 @@ To call a live provider:
 
 Credits: 1 credit per 1,000 tokens, minimum 1, reserved before the model call and settled from the provider usage payload (or a character estimate if the vendor omitted usage).
 
+### Knowledge and pgvector
+
+PostgreSQL needs the `vector` extension (`postgresql-16-pgvector` or the `pgvector/pgvector:pg16` image). Uploads go to `data/uploads` when `STORAGE_DRIVER=local`. URL ingestion only fetches public http(s) hosts after DNS resolution and an IP denylist check. Pasted and uploaded documents are processed immediately in the request; URL jobs also run on `npm run worker`.
+
 ### Google OAuth
 
 Set `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `NEXT_PUBLIC_GOOGLE_OAUTH=true`. The callback is `/api/auth/google/callback`. Tokens are encrypted when `APP_ENCRYPTION_KEY` is a 32-byte hex string.
@@ -128,6 +138,7 @@ Use `pg_dump` / `pg_restore` on the PostgreSQL database. Uploaded documents are 
 - `app/api/chatbots/[id]/play` SSE playground
 - `lib/ai` provider adapters, credentials, credits, and routing
 - `lib/chatbot` CRUD and playground orchestration
+- `lib/knowledge` ingestion, SSRF, jobs, embeddings, and retrieval
 - `lib/auth` and `lib/org` authorization used by both the UI and tests
 - `prisma/schema.prisma` tenant-aware models
-- `tests/` Node.js test runner coverage for auth, isolation, chatbots, and adapters
+- `tests/` Node.js test runner coverage for auth, isolation, chatbots, adapters, and knowledge

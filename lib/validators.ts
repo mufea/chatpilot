@@ -94,6 +94,22 @@ export const providerIdSchema = z.object({
   provider: z.enum(["openai", "gemini", "anthropic"]),
 });
 
+export const knowledgeBaseSchema = z.object({
+  name: z.string().trim().min(2).max(80),
+  description: z.string().trim().max(240).optional(),
+});
+
+export const pastedDocumentSchema = z.object({
+  title: z.string().trim().min(1).max(120),
+  text: z.string().trim().min(8).max(40000),
+  faq: z.string().optional(),
+});
+
+export const urlDocumentSchema = z.object({
+  url: z.string().trim().url().max(500),
+  sitemap: z.string().optional(),
+});
+
 export type FormState = {
   ok?: boolean;
   message?: string;

@@ -18,8 +18,17 @@ export function buildSystemPrompt(input: {
   systemInstructions?: string | null;
   fallbackMessage?: string | null;
   languages?: string[];
+  sources?: { title: string; snippet: string }[];
 }) {
   const business = (input.systemInstructions ?? "").trim().slice(0, MAX_SYSTEM_INSTRUCTION_CHARS);
+  const sourceBlock = input.sources?.length
+    ? [
+        "Answer only from the sources below. If they do not contain the answer, use the fallback message instead of guessing.",
+        "Cite sources as [1], [2] matching the list.",
+        "Sources:",
+        ...input.sources.map((source, index) => `[${index + 1}] ${source.title}\n${source.snippet}`),
+      ].join("\n")
+    : null;
   return [
     PLATFORM_POLICY,
     `Organization: ${input.organizationName}.`,
@@ -28,6 +37,7 @@ export function buildSystemPrompt(input: {
     input.languages?.length ? `Reply in one of: ${input.languages.join(", ")}.` : null,
     input.fallbackMessage ? `If you cannot answer, say: ${input.fallbackMessage}` : null,
     business ? `Business instructions:\n${business}` : null,
+    sourceBlock,
   ]
     .filter(Boolean)
     .join("\n\n");

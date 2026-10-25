@@ -7,8 +7,8 @@ export default function DocsPage() {
     <div className="mx-auto w-full max-w-3xl px-4 py-16">
       <h1 className="text-4xl font-semibold tracking-tight">Documentation</h1>
       <p className="mt-4 text-muted-foreground">
-        Phase 2 covers the builder, playground, and provider keys. Later phases will add
-        OpenAPI, widget embed contracts, and retrieval.
+        Phase 3 covers knowledge ingestion, pgvector retrieval, and cited playground answers.
+        Later phases will add the widget, inbox, billing, and a public API.
       </p>
       <section className="mt-10 space-y-4">
         <h2 className="text-2xl font-semibold">Local development</h2>
@@ -36,6 +36,16 @@ export default function DocsPage() {
           <code>AI_MOCK_MODE=true</code> replies are deterministic. To call a live vendor, set
           <code>AI_MOCK_MODE=false</code> and add a platform key or an encrypted workspace key at
           <code>/settings/providers</code>. Secrets are never returned in API responses.
+        </p>
+      </section>
+      <section className="mt-10 space-y-4">
+        <h2 className="text-2xl font-semibold">Knowledge and retrieval</h2>
+        <p className="text-sm text-muted-foreground">
+          Upload <code>.txt</code>, <code>.md</code>, <code>.csv</code>, <code>.pdf</code>, or{" "}
+          <code>.docx</code>, paste text, or ingest a public URL. Private, loopback, and link-local
+          hosts are blocked. Documents are processed through the <code>BackgroundJob</code> queue,
+          embedded, and stored in pgvector. Attach a knowledge base to a chatbot so playground
+          answers can cite sources.
         </p>
       </section>
       <section className="mt-10 space-y-4">

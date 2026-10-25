@@ -8,12 +8,15 @@ import { buildSystemPrompt, sanitizeUserMessage, toProviderMessages } from "@/li
 import { streamText } from "@/lib/ai/router";
 import type { GenerateRequest, ProviderId, TokenUsage } from "@/lib/ai/types";
 import { getChatbotForOrg } from "@/lib/chatbot/service";
+import { retrieveForChatbot } from "@/lib/knowledge/retrieve";
+import type { Citation } from "@/lib/knowledge/types";
 import { generateToken } from "@/lib/crypto";
 import { requireMembership } from "@/lib/org/service";
 
 export type PlayDelta =
   | { type: "conversation"; conversationId: string }
   | { type: "delta"; text: string }
+  | { type: "citations"; citations: Citation[] }
   | { type: "usage"; usage: TokenUsage; credits: number; provider: string; model: string }
   | { type: "done" }
   | { type: "error"; code: string; message: string };
@@ -84,40 +87,58 @@ export async function* playChatbot(
   const requestId = generateToken(16);
   const reservation = await reserveCredits(db, input.organizationId, requestId);
 
-  await db.message.create({
-    data: {
-      conversationId: conversation.id,
-      sender: MessageSender.VISITOR,
-      content: userText,
-    },
-  });
-
-  const system = buildSystemPrompt({
-    organizationName: chatbot.organization.name,
-    chatbotName: chatbot.name,
-    persona: config.persona,
-    systemInstructions: config.systemInstructions,
-    fallbackMessage: config.fallbackMessage,
-    languages: config.languages,
-  });
-
-  const transcript = [
-    ...history
-      .filter((item) => item.sender === "VISITOR" || item.sender === "AI")
-      .map((item) => ({
-        role: item.sender === "AI" ? ("assistant" as const) : ("user" as const),
-        content: item.content,
-      })),
-    { role: "user" as const, content: userText },
-  ];
-
   const primaryProvider = config.provider as ProviderId;
   let usedProvider = primaryProvider;
   let usedModel = config.model;
   let text = "";
   let usage: TokenUsage = { inputTokens: 0, outputTokens: 0, source: "estimated" };
+  let citations: Citation[] = [];
 
   try {
+    await db.message.create({
+      data: {
+        conversationId: conversation.id,
+        sender: MessageSender.VISITOR,
+        content: userText,
+      },
+    });
+
+    const retrieved = await retrieveForChatbot(db, {
+      organizationId: input.organizationId,
+      chatbotId: chatbot.id,
+      query: userText,
+    });
+    citations = retrieved.map((item) => ({
+      documentId: item.documentId,
+      title: item.title,
+      chunkIndex: item.chunkIndex,
+      snippet: item.snippet,
+      score: item.score,
+    }));
+    if (citations.length) {
+      yield { type: "citations", citations };
+    }
+
+    const system = buildSystemPrompt({
+      organizationName: chatbot.organization.name,
+      chatbotName: chatbot.name,
+      persona: config.persona,
+      systemInstructions: config.systemInstructions,
+      fallbackMessage: config.fallbackMessage,
+      languages: config.languages,
+      sources: retrieved.map((item) => ({ title: item.title, snippet: item.snippet })),
+    });
+
+    const transcript = [
+      ...history
+        .filter((item) => item.sender === "VISITOR" || item.sender === "AI")
+        .map((item) => ({
+          role: item.sender === "AI" ? ("assistant" as const) : ("user" as const),
+          content: item.content,
+        })),
+      { role: "user" as const, content: userText },
+    ];
+
     const primaryRequest: GenerateRequest = {
       provider: primaryProvider,
       model: config.model,
@@ -170,6 +191,7 @@ export async function* playChatbot(
         conversationId: conversation.id,
         sender: MessageSender.AI,
         content: reply,
+        citations: config.showSources ? citations : [],
         usage: {
           provider: usedProvider,
           model: usedModel,

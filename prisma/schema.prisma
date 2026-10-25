@@ -329,6 +329,7 @@ model Document {
   status          DocumentStatus     @default(PENDING)
   errorMessage    String?
   extractedText   String?
+  attempts        Int                @default(0)
   createdAt       DateTime           @default(now())
   updatedAt       DateTime           @updatedAt
   organization    Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -345,11 +346,11 @@ model DocumentChunk {
   content    String
   tokenCount Int?
   chunkIndex Int
-  metadata   Json?
-  /// JSON float array used until pgvector is available in Phase 3.
-  embedding  Json?
-  createdAt  DateTime @default(now())
-  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  metadata     Json?
+  embedding    Json?
+  embeddingVec Unsupported("vector")?
+  createdAt    DateTime @default(now())
+  document     Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
   @@index([documentId])
 }

@@ -17,12 +17,13 @@ const groups = [
       "Playground with streaming replies and usage tracking",
       "OpenAI, Gemini, and Anthropic adapters with normalized errors",
       "Encrypted workspace API keys kept on the server",
+      "Document and URL ingestion with SSRF protection",
+      "pgvector retrieval, grounded replies, and source citations",
     ],
   },
   {
     title: "Designed, not yet shipped",
     items: [
-      "Knowledge ingestion, embeddings, and citations",
       "Embeddable Shadow DOM widget",
       "Live inbox and human handoff",
       "Stripe and Midtrans billing",

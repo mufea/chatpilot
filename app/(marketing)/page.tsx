@@ -31,7 +31,7 @@ const benefits = [
 const steps = [
   { title: "Create a workspace", body: "Register, verify email, and invite teammates with role-based access." },
   { title: "Configure a chatbot", body: "Use the builder, choose a provider, and test in the playground." },
-  { title: "Attach knowledge", body: "Phase 3 ingests documents and websites into a tenant-scoped retrieval index." },
+  { title: "Attach knowledge", body: "Upload files or public URLs. Retrieval stays tenant-scoped and cites sources." },
   { title: "Embed and measure", body: "Phase 4–7 add the widget, inbox, billing, and the admin console." },
 ];
 

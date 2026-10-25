@@ -88,6 +88,35 @@ export const geminiAdapter: AIProviderAdapter = {
     yield { type: "usage", usage: usage ?? usageFromGemini(undefined, request, text) };
     yield { type: "done", finishReason };
   },
+  async embed(input, apiKey) {
+    const response = await fetchWithTimeout(
+      `https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:batchEmbedContents?key=${encodeURIComponent(apiKey)}`,
+      {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          requests: input.map((text) => ({
+            model: "models/text-embedding-004",
+            content: { parts: [{ text }] },
+          })),
+        }),
+      },
+      30_000,
+    );
+    if (!response.ok) throw await readErrorBody(response, "Gemini");
+    const json = (await response.json()) as { embeddings?: { values?: number[] }[] };
+    if (!json.embeddings?.length) {
+      throw new Error("Gemini returned no embeddings.");
+    }
+    return {
+      vectors: json.embeddings.map((item) => item.values ?? []),
+      usage: {
+        inputTokens: estimateTokens(input.join("")),
+        outputTokens: 0,
+        source: "estimated",
+      },
+    };
+  },
 };
 
 type GeminiResponse = {

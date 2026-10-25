@@ -7,10 +7,12 @@ import {
   publishChatbotAction,
 } from "@/app/actions/chatbot";
 import { BuilderForm } from "@/components/chatbots/builder-form";
+import { KnowledgeAttachForm } from "@/components/chatbots/knowledge-attach";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { getCurrentAuth } from "@/lib/auth/session";
 import { getChatbotForOrg } from "@/lib/chatbot/service";
 import { prisma } from "@/lib/db";
+import { listKnowledgeBases } from "@/lib/knowledge/service";
 import { hasOrgRole } from "@/lib/org/access";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +27,13 @@ export default async function ChatbotEditorPage({
   const chatbot = await getChatbotForOrg(prisma, auth.activeOrganization.id, id).catch(() => null);
   if (!chatbot) notFound();
   const config = chatbot.configuration;
+  const [bases, links] = await Promise.all([
+    listKnowledgeBases(prisma, auth.activeOrganization.id),
+    prisma.chatbotKnowledgeBase.findMany({
+      where: { chatbotId: chatbot.id },
+      select: { knowledgeBaseId: true },
+    }),
+  ]);
   const canManage = auth.activeMembership
     ? hasOrgRole(auth.activeMembership, OrganizationRole.ADMIN)
     : false;
@@ -109,6 +118,12 @@ export default async function ChatbotEditorPage({
           fallbackEnabled: config?.fallbackEnabled ?? false,
           fallbackProvider: config?.fallbackProvider ?? "",
         }}
+      />
+      <KnowledgeAttachForm
+        chatbotId={chatbot.id}
+        bases={bases.map((item) => ({ id: item.id, name: item.name }))}
+        linkedIds={links.map((item) => item.knowledgeBaseId)}
+        canManage={canManage}
       />
     </div>
   );

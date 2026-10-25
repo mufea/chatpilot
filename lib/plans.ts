@@ -118,6 +118,18 @@ export const DEFAULT_PLANS: PlanDefinition[] = [
   },
 ];
 
+export async function getOrganizationPlanLimits(
+  db: import("@prisma/client").PrismaClient,
+  organizationId: string,
+): Promise<PlanLimits> {
+  const subscription = await db.subscription.findUnique({
+    where: { organizationId },
+    include: { plan: true },
+  });
+  const limits = subscription?.plan?.limits as PlanLimits | undefined;
+  return limits ?? DEFAULT_PLANS[0]!.limits;
+}
+
 export function formatPlanPrice(cents: number, currency = "USD"): string {
   if (cents === 0) return "Free";
   return new Intl.NumberFormat("en-US", {

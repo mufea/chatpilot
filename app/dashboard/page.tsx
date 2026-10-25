@@ -9,15 +9,12 @@ export default async function DashboardPage() {
   const auth = await getCurrentAuth();
   if (!auth?.activeOrganization) redirect("/sign-in");
 
-  const [chatbotCount, publishedCount, memberCount, creditAccount, subscription] = await Promise.all([
+  const [chatbotCount, publishedCount, creditAccount, subscription, knowledgeCount] = await Promise.all([
     prisma.chatbot.count({
       where: { organizationId: auth.activeOrganization.id, deletedAt: null },
     }),
     prisma.chatbot.count({
       where: { organizationId: auth.activeOrganization.id, status: "PUBLISHED", deletedAt: null },
-    }),
-    prisma.organizationMember.count({
-      where: { organizationId: auth.activeOrganization.id },
     }),
     prisma.creditAccount.findUnique({
       where: { organizationId: auth.activeOrganization.id },
@@ -26,12 +23,15 @@ export default async function DashboardPage() {
       where: { organizationId: auth.activeOrganization.id },
       include: { plan: true },
     }),
+    prisma.knowledgeBase.count({
+      where: { organizationId: auth.activeOrganization.id },
+    }),
   ]);
 
   const cards = [
     { label: "Chatbots", value: chatbotCount, hint: "Configure and play in Chatbots" },
     { label: "Published", value: publishedCount, hint: "None until a bot is published" },
-    { label: "Team members", value: memberCount, hint: "Invite from Settings" },
+    { label: "Knowledge bases", value: knowledgeCount, hint: "Documents and URLs for retrieval" },
     { label: "Credit balance", value: creditAccount?.balance ?? 0, hint: "Welcome grant recorded in the ledger" },
   ];
 
@@ -66,15 +66,15 @@ export default async function DashboardPage() {
         <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
           <li>Create a chatbot, set instructions, and publish after verifying email.</li>
           <li>Send playground messages. Usage and credits are recorded from actual tokens.</li>
+          <li>Ingest documents or public URLs, attach the knowledge base to a chatbot, and ask in the playground.</li>
           <li>Add encrypted OpenAI, Gemini, or Anthropic keys in Settings, or keep AI_MOCK_MODE on.</li>
-          <li>Invite teammates and assign Owner, Admin, or Agent roles.</li>
         </ul>
         <div className="mt-5 flex flex-wrap gap-3">
           <Link href="/chatbots" className={cn(buttonVariants())}>
             Open chatbots
           </Link>
-          <Link href="/settings/providers" className={cn(buttonVariants({ variant: "outline" }))}>
-            Provider keys
+          <Link href="/knowledge" className={cn(buttonVariants({ variant: "outline" }))}>
+            Knowledge
           </Link>
         </div>
       </div>

@@ -4,7 +4,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-type ChatItem = { role: "user" | "assistant"; content: string };
+type Citation = { title: string; snippet: string; score: number };
+type ChatItem = { role: "user" | "assistant"; content: string; citations?: Citation[] };
 
 export function PlaygroundChat({
   chatbotId,
@@ -25,6 +26,7 @@ export function PlaygroundChat({
   const [error, setError] = useState<string | null>(null);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [usage, setUsage] = useState<string | null>(null);
+  const [citations, setCitations] = useState<Citation[]>([]);
 
   async function send(text: string) {
     const trimmed = text.trim();
@@ -64,9 +66,21 @@ export function PlaygroundChat({
             provider?: string;
             model?: string;
             usage?: { inputTokens: number; outputTokens: number; source: string };
+            citations?: Citation[];
           };
           if (event.type === "conversation" && event.conversationId) {
             setConversationId(event.conversationId);
+          }
+          if (event.type === "citations" && event.citations) {
+            setCitations(event.citations);
+            setMessages((current) => {
+              const next = [...current];
+              const last = next[next.length - 1];
+              if (last?.role === "assistant") {
+                next[next.length - 1] = { ...last, citations: event.citations };
+              }
+              return next;
+            });
           }
           if (event.type === "delta" && event.text) {
             setMessages((current) => {
@@ -113,6 +127,7 @@ export function PlaygroundChat({
             setConversationId(null);
             setMessages([{ role: "assistant", content: welcomeMessage }]);
             setUsage(null);
+            setCitations([]);
             setError(null);
           }}
         >
@@ -131,6 +146,16 @@ export function PlaygroundChat({
               style={message.role === "user" ? { backgroundColor: brandColor } : undefined}
             >
               {message.content || (pending ? "…" : "")}
+              {message.citations?.length ? (
+                <ul className="mt-2 space-y-1 border-t border-black/10 pt-2 text-xs">
+                  {message.citations.map((citation) => (
+                    <li key={`${citation.title}-${citation.snippet.slice(0, 24)}`}>
+                      <span className="font-medium">{citation.title}</span>
+                      <span className="block text-muted-foreground">{citation.snippet}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
             </div>
           </div>
         ))}
@@ -138,6 +163,9 @@ export function PlaygroundChat({
       <div className="space-y-3 border-t px-4 py-3">
         {error ? <p className="text-sm text-destructive">{error}</p> : null}
         {usage ? <p className="text-xs text-muted-foreground">{usage}</p> : null}
+        {citations.length && !messages.some((item) => item.citations?.length) ? (
+          <p className="text-xs text-muted-foreground">{citations.length} source{citations.length === 1 ? "" : "s"} retrieved</p>
+        ) : null}
         <div className="flex flex-wrap gap-2">
           {suggestedQuestions.map((question) => (
             <button
