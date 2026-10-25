@@ -30,7 +30,7 @@ const benefits = [
 
 const steps = [
   { title: "Create a workspace", body: "Register, verify email, and invite teammates with role-based access." },
-  { title: "Configure a chatbot", body: "Phase 2 adds the builder, providers, and a live playground." },
+  { title: "Configure a chatbot", body: "Use the builder, choose a provider, and test in the playground." },
   { title: "Attach knowledge", body: "Phase 3 ingests documents and websites into a tenant-scoped retrieval index." },
   { title: "Embed and measure", body: "Phase 4–7 add the widget, inbox, billing, and the admin console." },
 ];
@@ -42,7 +42,7 @@ const faqs = [
   },
   {
     q: "Can I talk to a live model today?",
-    a: "Not in Phase 1. The landing preview is scripted on purpose. Provider adapters and streaming chat ship in Phase 2 after this foundation is approved.",
+    a: "Yes, in the signed-in playground. With AI_MOCK_MODE the reply is deterministic. Set a platform or workspace key and AI_MOCK_MODE=false to call OpenAI, Gemini, or Anthropic.",
   },
   {
     q: "How are secrets handled?",
@@ -68,8 +68,8 @@ export default function HomePage() {
             </h1>
             <p className="max-w-xl text-lg text-muted-foreground">
               ChatPilot AI gives businesses, stores, and agencies a workspace to create, train,
-              and deploy site chatbots. Phase 1 ships the durable foundation: identity, tenancy,
-              plans, and the public site.
+              and deploy site chatbots. Phase 2 ships the builder and playground on top of the
+              identity and tenancy foundation.
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Link href="/sign-up" className={cn(buttonVariants({ size: "lg" }))}>

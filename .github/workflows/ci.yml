@@ -28,6 +28,9 @@ jobs:
       NODE_ENV: test
       EMAIL_DELIVERY: console
       APP_URL: http://127.0.0.1:43180
+      AI_MOCK_MODE: "true"
+      LIVE_AI_TESTS: "false"
+      APP_ENCRYPTION_KEY: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

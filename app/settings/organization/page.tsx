@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { SettingsNav } from "@/components/app/settings-nav";
 import { CreateOrganizationForm, RenameOrganizationForm } from "@/components/forms/settings-forms";
 import { getCurrentAuth } from "@/lib/auth/session";
 
@@ -8,6 +9,7 @@ export default async function OrganizationSettingsPage() {
 
   return (
     <div className="space-y-8">
+      <SettingsNav current="/settings/organization" />
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Workspace</h1>
         <p className="mt-2 text-sm text-muted-foreground">

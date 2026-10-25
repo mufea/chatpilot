@@ -7,8 +7,8 @@ export default function DocsPage() {
     <div className="mx-auto w-full max-w-3xl px-4 py-16">
       <h1 className="text-4xl font-semibold tracking-tight">Documentation</h1>
       <p className="mt-4 text-muted-foreground">
-        Phase 1 documents the foundation. Later phases will add OpenAPI, widget embed contracts,
-        and provider setup.
+        Phase 2 covers the builder, playground, and provider keys. Later phases will add
+        OpenAPI, widget embed contracts, and retrieval.
       </p>
       <section className="mt-10 space-y-4">
         <h2 className="text-2xl font-semibold">Local development</h2>
@@ -27,6 +27,15 @@ export default function DocsPage() {
           verification and password reset tokens are hashed at rest. In development, set
           <code> EMAIL_DELIVERY=console</code> and <code>ALLOW_DEV_MAILBOX=true</code> to read
           outbound messages at <code>/dev/mailbox</code>.
+        </p>
+      </section>
+      <section className="mt-10 space-y-4">
+        <h2 className="text-2xl font-semibold">Chatbots and providers</h2>
+        <p className="text-sm text-muted-foreground">
+          Create a chatbot under <code>/chatbots</code>, then test it in the playground. With
+          <code>AI_MOCK_MODE=true</code> replies are deterministic. To call a live vendor, set
+          <code>AI_MOCK_MODE=false</code> and add a platform key or an encrypted workspace key at
+          <code>/settings/providers</code>. Secrets are never returned in API responses.
         </p>
       </section>
       <section className="mt-10 space-y-4">

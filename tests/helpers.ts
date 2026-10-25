@@ -13,6 +13,10 @@ export function testDb(): PrismaClient {
   process.env.EMAIL_DELIVERY = "console";
   process.env.ALLOW_DEV_MAILBOX = "true";
   process.env.APP_URL = "http://127.0.0.1:43180";
+  process.env.AI_MOCK_MODE = process.env.AI_MOCK_MODE ?? "true";
+  process.env.APP_ENCRYPTION_KEY =
+    process.env.APP_ENCRYPTION_KEY ??
+    "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
   if (!migrated) {
     execFileSync("npx", ["prisma", "migrate", "deploy"], {
       env: { ...process.env, DATABASE_URL: TEST_DATABASE_URL },
@@ -28,8 +32,14 @@ export async function resetDb(db: PrismaClient) {
     TRUNCATE TABLE
       "OutboundEmail",
       "AuditLog",
+      "UsageRecord",
       "CreditLedgerEntry",
       "CreditAccount",
+      "Message",
+      "Conversation",
+      "ChatbotConfiguration",
+      "Chatbot",
+      "AIProviderConfiguration",
       "Subscription",
       "Invitation",
       "OrganizationMember",

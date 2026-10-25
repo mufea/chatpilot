@@ -25,6 +25,9 @@ const envSchema = z.object({
     .enum(["true", "false"])
     .default("true")
     .transform((value) => value === "true"),
+  OPENAI_API_KEY: z.string().optional(),
+  GOOGLE_GENERATIVE_AI_API_KEY: z.string().optional(),
+  ANTHROPIC_API_KEY: z.string().optional(),
 });
 
 export type AppConfig = {
@@ -49,6 +52,11 @@ export type AppConfig = {
   googleClientSecret?: string;
   superAdminEmails: string[];
   aiMockMode: boolean;
+  platformKeysConfigured: {
+    openai: boolean;
+    gemini: boolean;
+    anthropic: boolean;
+  };
 };
 
 function parseEnv(): AppConfig {
@@ -71,6 +79,9 @@ function parseEnv(): AppConfig {
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     SUPER_ADMIN_EMAILS: process.env.SUPER_ADMIN_EMAILS,
     AI_MOCK_MODE: process.env.AI_MOCK_MODE,
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    GOOGLE_GENERATIVE_AI_API_KEY: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+    ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
   });
 
   const googleOAuthEnabled = Boolean(
@@ -103,6 +114,11 @@ function parseEnv(): AppConfig {
       .map((email) => email.trim().toLowerCase())
       .filter(Boolean),
     aiMockMode: parsed.AI_MOCK_MODE,
+    platformKeysConfigured: {
+      openai: Boolean(parsed.OPENAI_API_KEY?.trim()),
+      gemini: Boolean(parsed.GOOGLE_GENERATIVE_AI_API_KEY?.trim()),
+      anthropic: Boolean(parsed.ANTHROPIC_API_KEY?.trim()),
+    },
   };
 }
 
@@ -154,6 +170,27 @@ export function collectConfigIssues(config: AppConfig = appConfig): ConfigIssue[
       key: "ALLOW_DEV_MAILBOX",
       level: "error",
       message: "Development mailbox cannot be enabled in production.",
+    });
+  }
+
+  if (config.nodeEnv === "production" && config.aiMockMode) {
+    issues.push({
+      key: "AI_MOCK_MODE",
+      level: "warning",
+      message: "Production is using the mock adapter. Set AI_MOCK_MODE=false to call live providers.",
+    });
+  }
+
+  if (
+    !config.aiMockMode &&
+    !config.platformKeysConfigured.openai &&
+    !config.platformKeysConfigured.gemini &&
+    !config.platformKeysConfigured.anthropic
+  ) {
+    issues.push({
+      key: "AI_PROVIDER_KEYS",
+      level: "warning",
+      message: "No platform AI keys are set. Workspaces must add their own encrypted keys to chat.",
     });
   }
 

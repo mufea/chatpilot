@@ -13,13 +13,15 @@ const groups = [
       "Account export and account deletion",
       "Platform super-admin directory",
       "Health, readiness, and configuration checks",
+      "Chatbot CRUD, publish, duplicate, and soft-delete",
+      "Playground with streaming replies and usage tracking",
+      "OpenAI, Gemini, and Anthropic adapters with normalized errors",
+      "Encrypted workspace API keys kept on the server",
     ],
   },
   {
     title: "Designed, not yet shipped",
     items: [
-      "Visual chatbot builder and live playground",
-      "OpenAI, Gemini, and Claude adapters with streaming",
       "Knowledge ingestion, embeddings, and citations",
       "Embeddable Shadow DOM widget",
       "Live inbox and human handoff",

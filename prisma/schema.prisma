@@ -286,6 +286,8 @@ model ChatbotConfiguration {
   allowedDomains      String[] @default([])
   showSources         Boolean  @default(true)
   removeBranding      Boolean  @default(false)
+  fallbackEnabled     Boolean  @default(false)
+  fallbackProvider    String?
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
   chatbot             Chatbot  @relation(fields: [chatbotId], references: [id], onDelete: Cascade)

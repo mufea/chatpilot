@@ -1,6 +1,7 @@
 import { OrganizationRole } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { removeMemberAction, updateMemberRoleAction } from "@/app/actions/org";
+import { SettingsNav } from "@/components/app/settings-nav";
 import { InviteMemberForm } from "@/components/forms/settings-forms";
 import { Button } from "@/components/ui/button";
 import { getCurrentAuth } from "@/lib/auth/session";
@@ -38,6 +39,7 @@ export default async function MembersPage() {
 
   return (
     <div className="space-y-8">
+      <SettingsNav current="/settings/members" />
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Members</h1>
         <p className="mt-2 text-sm text-muted-foreground">

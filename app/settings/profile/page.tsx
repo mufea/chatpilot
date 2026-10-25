@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { SettingsNav } from "@/components/app/settings-nav";
 import { DeleteAccountButton, PasswordForm, ProfileForm } from "@/components/forms/settings-forms";
 import { buttonVariants } from "@/components/ui/button";
 import { getCurrentAuth } from "@/lib/auth/session";
@@ -11,6 +12,7 @@ export default async function ProfileSettingsPage() {
 
   return (
     <div className="space-y-8">
+      <SettingsNav current="/settings/profile" />
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Profile</h1>
         <p className="mt-2 text-sm text-muted-foreground">{auth.user.email}</p>

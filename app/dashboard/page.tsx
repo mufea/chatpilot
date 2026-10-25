@@ -29,7 +29,7 @@ export default async function DashboardPage() {
   ]);
 
   const cards = [
-    { label: "Chatbots", value: chatbotCount, hint: "Builder arrives in Phase 2" },
+    { label: "Chatbots", value: chatbotCount, hint: "Configure and play in Chatbots" },
     { label: "Published", value: publishedCount, hint: "None until a bot is published" },
     { label: "Team members", value: memberCount, hint: "Invite from Settings" },
     { label: "Credit balance", value: creditAccount?.balance ?? 0, hint: "Welcome grant recorded in the ledger" },
@@ -46,7 +46,7 @@ export default async function DashboardPage() {
       </div>
       {!auth.user.emailVerifiedAt ? (
         <div className="rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
-          Verify your email to unlock publishing in later phases.{" "}
+          Verify your email before you can publish a chatbot.{" "}
           <Link href="/verify-email" className="font-medium text-primary hover:underline">
             Open verification
           </Link>
@@ -64,16 +64,17 @@ export default async function DashboardPage() {
       <div className="rounded-2xl border bg-card p-6">
         <h2 className="text-lg font-semibold">What you can do now</h2>
         <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+          <li>Create a chatbot, set instructions, and publish after verifying email.</li>
+          <li>Send playground messages. Usage and credits are recorded from actual tokens.</li>
+          <li>Add encrypted OpenAI, Gemini, or Anthropic keys in Settings, or keep AI_MOCK_MODE on.</li>
           <li>Invite teammates and assign Owner, Admin, or Agent roles.</li>
-          <li>Export or delete your account from Settings.</li>
-          <li>Review seeded plan limits. Checkout is not enabled yet.</li>
         </ul>
         <div className="mt-5 flex flex-wrap gap-3">
-          <Link href="/settings/members" className={cn(buttonVariants())}>
-            Invite teammates
+          <Link href="/chatbots" className={cn(buttonVariants())}>
+            Open chatbots
           </Link>
-          <Link href="/settings/profile" className={cn(buttonVariants({ variant: "outline" }))}>
-            Manage profile
+          <Link href="/settings/providers" className={cn(buttonVariants({ variant: "outline" }))}>
+            Provider keys
           </Link>
         </div>
       </div>
