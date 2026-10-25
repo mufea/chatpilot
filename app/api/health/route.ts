@@ -17,7 +17,7 @@ export async function GET() {
   return NextResponse.json({
     status: report.ok ? "ok" : "degraded",
     service: "chatpilot-web",
-    phase: 3,
+    phase: 4,
     ai: {
       mockMode: appConfig.aiMockMode,
       platformKeys: appConfig.platformKeysConfigured,
@@ -25,6 +25,11 @@ export async function GET() {
     rag: {
       pgvector,
       storage: process.env.STORAGE_DRIVER || "local",
+    },
+    widget: {
+      version: "v1",
+      script: "/widget/v1.js",
+      alias: "/widget.js",
     },
     config: {
       ok: report.ok,

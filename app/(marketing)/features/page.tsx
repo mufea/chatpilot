@@ -19,12 +19,14 @@ const groups = [
       "Encrypted workspace API keys kept on the server",
       "Document and URL ingestion with SSRF protection",
       "pgvector retrieval, grounded replies, and source citations",
+      "Versioned Shadow DOM website widget with isolated styles",
+      "Visitor sessions, domain allowlisting, and widget rate limits",
+      "Public chatbot ids that never expose provider credentials",
     ],
   },
   {
     title: "Designed, not yet shipped",
     items: [
-      "Embeddable Shadow DOM widget",
       "Live inbox and human handoff",
       "Stripe and Midtrans billing",
       "Versioned public API with hashed API keys",

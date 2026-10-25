@@ -7,8 +7,9 @@ export default function DocsPage() {
     <div className="mx-auto w-full max-w-3xl px-4 py-16">
       <h1 className="text-4xl font-semibold tracking-tight">Documentation</h1>
       <p className="mt-4 text-muted-foreground">
-        Phase 3 covers knowledge ingestion, pgvector retrieval, and cited playground answers.
-        Later phases will add the widget, inbox, billing, and a public API.
+        Phase 4 covers the versioned website widget: Shadow DOM isolation, visitor sessions,
+        domain allowlisting, rate limits, and server-side model access. Inbox, billing, and
+        the public API remain later work.
       </p>
       <section className="mt-10 space-y-4">
         <h2 className="text-2xl font-semibold">Local development</h2>
@@ -49,7 +50,13 @@ export default function DocsPage() {
         </p>
       </section>
       <section className="mt-10 space-y-4">
-        <h2 className="text-2xl font-semibold">Future widget contract</h2>
+        <h2 className="text-2xl font-semibold">Website widget</h2>
+        <p className="text-sm text-muted-foreground">
+          Publish a chatbot, add at least one allowed website domain, then paste the snippet.
+          An empty allowlist rejects every public request. The script derives the API origin from
+          <code>document.currentScript.src</code> and only sends the public chatbot id. Provider
+          keys, system instructions, and the internal chatbot id never leave the server.
+        </p>
         <pre className="overflow-x-auto rounded-xl bg-muted p-4 text-xs">
 {`<script
   src="https://YOUR-DOMAIN/widget.js"
@@ -58,8 +65,13 @@ export default function DocsPage() {
 ></script>`}
         </pre>
         <p className="text-sm text-muted-foreground">
-          The snippet is reserved. Phase 4 will publish the versioned bundle, origin checks, and
-          visitor session rules. Do not embed it yet.
+          Versioned bundle: <code>/widget/v1.js</code>. Alias: <code>/widget.js</code>. Public
+          APIs: <code>/api/widget/v1/config</code>, <code>/session</code>, and <code>/chat</code>
+          (SSE). CORS reflects only an allowed origin. Visitor tokens are hashed at rest.
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Independent storefront for local checks: <code>npm run widget-demo</code> serves
+          Harbor Books on port 43211 against the app on 43180.
         </p>
       </section>
     </div>

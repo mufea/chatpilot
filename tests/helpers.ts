@@ -37,6 +37,7 @@ export async function resetDb(db: PrismaClient) {
       "CreditAccount",
       "Message",
       "Conversation",
+      "VisitorSession",
       "DocumentChunk",
       "Document",
       "ChatbotKnowledgeBase",

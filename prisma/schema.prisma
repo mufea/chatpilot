@@ -358,6 +358,7 @@ model DocumentChunk {
 model VisitorSession {
   id             String         @id @default(cuid())
   publicId       String         @unique @default(cuid())
+  tokenHash      String         @unique
   organizationId String?
   chatbotId      String?
   origin         String?
@@ -366,6 +367,8 @@ model VisitorSession {
   createdAt      DateTime       @default(now())
   lastSeenAt     DateTime       @default(now())
   conversations  Conversation[]
+
+  @@index([chatbotId])
 }
 
 model Conversation {

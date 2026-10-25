@@ -1,12 +1,12 @@
 # ChatPilot AI
 
-Multi-tenant AI chatbot SaaS for businesses, ecommerce stores, agencies, and individuals. This repository is being built in phases. **Phase 3 is implemented:** knowledge ingestion, SSRF-safe crawling, background processing, pgvector retrieval, grounded playground answers, and source citations.
+Multi-tenant AI chatbot SaaS for businesses, ecommerce stores, agencies, and individuals. This repository is being built in phases. **Phase 4 is implemented:** a versioned, embeddable website widget with Shadow DOM style isolation, visitor sessions, domain allowlisting, rate limiting, streaming replies, and server-side AI access.
 
-Later phases add the embeddable widget, inbox, Stripe/Midtrans billing, analytics, and the public API. Those screens remain honest placeholders.
+Later phases add the inbox, Stripe/Midtrans billing, analytics, and the public API. Those screens remain honest placeholders.
 
 ## Phase 0 audit
 
-The starting repository contained only the empty root commit. Phase 1 added identity and tenancy. Phase 2 added the builder and playground. Phase 3 adds retrieval.
+The starting repository contained only the empty root commit. Phase 1 added identity and tenancy. Phase 2 added the builder and playground. Phase 3 added retrieval. Phase 4 adds the public website widget.
 
 - Next.js App Router, TypeScript (strict), Tailwind CSS v4, shadcn/ui, Lucide
 - Next.js server actions and route handlers
@@ -15,7 +15,7 @@ The starting repository contained only the empty root commit. Phase 1 added iden
 - OpenAI, Gemini, and Anthropic adapters behind one interface
 - Deterministic mock adapter for tests and `AI_MOCK_MODE`
 
-## What works in Phase 3
+## What works in Phase 4
 
 - Everything from Phase 1 (register, sessions, orgs, invites, admin, health)
 - Create, configure, publish, unpublish, duplicate, and soft-delete chatbots
@@ -33,10 +33,15 @@ The starting repository contained only the empty root commit. Phase 1 added iden
 - Deterministic mock embeddings plus OpenAI/Gemini embeddings when live keys exist
 - pgvector cosine retrieval scoped to the chatbot's attached knowledge bases
 - Grounded playground replies with stored source citations
+- Versioned widget at `/widget/v1.js` (alias `/widget.js`) rendered in Shadow DOM
+- Public APIs `/api/widget/v1/{config,session,chat}` with CORS only for allowed domains
+- Visitor sessions with hashed tokens, isolated conversations, and stricter rate limits
+- Embed snippet on the chatbot editor; empty allowlist or draft status blocks public use
+- Independent Harbor Books demo site on port 43211 (`npm run widget-demo`)
 
 ## What is not complete
 
-Do not treat these as shipped: the website widget, inbox/handoff, Stripe/Midtrans checkout, or the versioned public API.
+Do not treat these as shipped: inbox/handoff, Stripe/Midtrans checkout, or the versioned public API.
 
 ## Local setup
 
@@ -86,11 +91,27 @@ To call a live provider:
 2. Add `OPENAI_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY`, and/or `ANTHROPIC_API_KEY` on the server, **or** paste a workspace key at `/settings/providers`.
 3. Workspace keys are encrypted with `APP_ENCRYPTION_KEY` (32-byte hex). They are never returned to the browser.
 
-Credits: 1 credit per 1,000 tokens, minimum 1, reserved before the model call and settled from the provider usage payload (or a character estimate if the vendor omitted usage).
+Credits: 1 credit per 1,000 tokens, minimum 1, reserved before the model call and settled from the provider usage payload (or a character estimate if the vendor omitted usage). The public widget uses the same reservation path. Public chatbot ids never receive provider keys.
 
 ### Knowledge and pgvector
 
 PostgreSQL needs the `vector` extension (`postgresql-16-pgvector` or the `pgvector/pgvector:pg16` image). Uploads go to `data/uploads` when `STORAGE_DRIVER=local`. URL ingestion only fetches public http(s) hosts after DNS resolution and an IP denylist check. Pasted and uploaded documents are processed immediately in the request; URL jobs also run on `npm run worker`.
+
+### Website widget
+
+1. Publish a chatbot after verifying email.
+2. Add at least one allowed website domain (`store.example.com` or `127.0.0.1:43211`).
+3. Paste the snippet from the chatbot editor. The script reads `data-chatbot-id` and derives the API origin from its own `src`.
+4. Host-page CSS cannot style the panel; the widget attaches a Shadow DOM.
+
+Local independent-site check:
+
+```bash
+npm run dev
+npm run widget-demo
+```
+
+Open [http://127.0.0.1:43211](http://127.0.0.1:43211). The demo origin is allowlisted; any other `Origin` receives 403.
 
 ### Google OAuth
 
@@ -136,9 +157,13 @@ Use `pg_dump` / `pg_restore` on the PostgreSQL database. Uploaded documents are 
 
 - `app/` routes, server actions, and health endpoints
 - `app/api/chatbots/[id]/play` SSE playground
+- `app/api/widget/v1` public config, visitor session, and SSE chat
+- `public/widget/v1.js` Shadow DOM widget (`/widget.js` aliases it)
 - `lib/ai` provider adapters, credentials, credits, and routing
 - `lib/chatbot` CRUD and playground orchestration
+- `lib/widget` origin checks, public config, visitor sessions
 - `lib/knowledge` ingestion, SSRF, jobs, embeddings, and retrieval
 - `lib/auth` and `lib/org` authorization used by both the UI and tests
+- `widget-demo/` independent storefront used for embed verification
 - `prisma/schema.prisma` tenant-aware models
-- `tests/` Node.js test runner coverage for auth, isolation, chatbots, adapters, and knowledge
+- `tests/` Node.js test runner coverage for auth, isolation, chatbots, adapters, knowledge, and the widget

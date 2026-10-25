@@ -7,10 +7,12 @@ import {
   publishChatbotAction,
 } from "@/app/actions/chatbot";
 import { BuilderForm } from "@/components/chatbots/builder-form";
+import { EmbedSnippet } from "@/components/chatbots/embed-snippet";
 import { KnowledgeAttachForm } from "@/components/chatbots/knowledge-attach";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { getCurrentAuth } from "@/lib/auth/session";
 import { getChatbotForOrg } from "@/lib/chatbot/service";
+import { appConfig } from "@/lib/config";
 import { prisma } from "@/lib/db";
 import { listKnowledgeBases } from "@/lib/knowledge/service";
 import { hasOrgRole } from "@/lib/org/access";
@@ -118,6 +120,12 @@ export default async function ChatbotEditorPage({
           fallbackEnabled: config?.fallbackEnabled ?? false,
           fallbackProvider: config?.fallbackProvider ?? "",
         }}
+      />
+      <EmbedSnippet
+        publicId={chatbot.publicId}
+        status={chatbot.status}
+        allowedDomains={config?.allowedDomains ?? []}
+        appUrl={appConfig.appUrl}
       />
       <KnowledgeAttachForm
         chatbotId={chatbot.id}

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Harbor Books — independent storefront</title>
+    <style>
+      :root {
+        --ink: #2b2118;
+        --paper: #f4ead8;
+        --card: #fff8ec;
+        --accent: #8b3a2a;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, #fff6e4, transparent 40%),
+          var(--paper);
+      }
+      header, main, footer { width: min(980px, calc(100% - 32px)); margin: 0 auto; }
+      header { display: flex; justify-content: space-between; align-items: center; padding: 28px 0; }
+      .mark { font-weight: 700; letter-spacing: 0.04em; }
+      nav { display: flex; gap: 18px; font-size: 15px; }
+      .hero { padding: 48px 0 24px; }
+      h1 { font-size: clamp(36px, 6vw, 64px); line-height: 0.95; margin: 0 0 16px; max-width: 12ch; }
+      .lede { font-size: 18px; max-width: 46ch; }
+      .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); padding: 12px 0 64px; }
+      article { background: var(--card); border: 1px solid #e4d3b4; border-radius: 18px; padding: 20px; min-height: 160px; }
+      .price { color: var(--accent); font-weight: 700; }
+      footer { padding: 24px 0 80px; font-size: 14px; opacity: 0.75; }
+      .note { margin-top: 20px; padding: 12px 14px; border-left: 3px solid var(--accent); background: #fff; font-size: 14px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="mark">HARBOR BOOKS</div>
+      <nav>
+        <span>Hours</span>
+        <span>Returns</span>
+        <span>Quiet desk</span>
+      </nav>
+    </header>
+    <main>
+      <section class="hero">
+        <h1>A neighborhood shop, not a ChatPilot page.</h1>
+        <p class="lede">
+          This site is served on a separate origin from the ChatPilot app. The launcher
+          in the corner is the Phase 4 widget: Shadow DOM styles, visitor session, and
+          server-side model access only.
+        </p>
+        <p class="note">
+          Public chatbot id: <strong id="public-id">__PUBLIC_ID__</strong>.
+          Widget origin: <strong id="app-origin">__APP_ORIGIN__</strong>.
+          No API keys are present in this page or in the widget script.
+        </p>
+      </section>
+      <section class="grid">
+        <article>
+          <h2>Store hours</h2>
+          <p>Members 09:00, public 10:00–19:00 weekdays, 11:00–17:00 weekends.</p>
+        </article>
+        <article>
+          <h2>Returns</h2>
+          <p>Unopened titles come back within 21 days with a receipt.</p>
+        </article>
+        <article>
+          <h2>Quiet desk</h2>
+          <p>Members can reserve the mezzanine desk after 14:00.</p>
+          <p class="price">Ask the widget</p>
+        </article>
+      </section>
+    </main>
+    <footer>Independent demo storefront on port 43211. Host CSS uses serif and cream; the widget must not inherit it.</footer>
+    <script
+      src="__APP_ORIGIN__/widget.js"
+      data-chatbot-id="__PUBLIC_ID__"
+      data-open="true"
+      async
+    ></script>
+  </body>
+</html>

@@ -17,6 +17,7 @@
     "db:generate": "prisma generate",
     "check:env": "node --env-file=.env --import tsx scripts/check-env.ts",
     "worker": "tsx scripts/worker.ts",
+    "widget-demo": "tsx scripts/widget-demo.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

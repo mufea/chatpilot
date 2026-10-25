@@ -18,7 +18,7 @@ const benefits = [
   },
   {
     title: "Ship a widget, not a demo",
-    body: "The public embed will use a public chatbot ID, origin allowlists, and visitor sessions. No provider keys ever leave the server.",
+    body: "The public embed uses a public chatbot ID, origin allowlists, and hashed visitor sessions. Provider keys never leave the server.",
     icon: Globe,
   },
   {
@@ -32,7 +32,7 @@ const steps = [
   { title: "Create a workspace", body: "Register, verify email, and invite teammates with role-based access." },
   { title: "Configure a chatbot", body: "Use the builder, choose a provider, and test in the playground." },
   { title: "Attach knowledge", body: "Upload files or public URLs. Retrieval stays tenant-scoped and cites sources." },
-  { title: "Embed and measure", body: "Phase 4–7 add the widget, inbox, billing, and the admin console." },
+  { title: "Embed on your site", body: "Publish, allowlist the domain, and paste /widget.js. Inbox, billing, and the public API come later." },
 ];
 
 const faqs = [
@@ -42,7 +42,7 @@ const faqs = [
   },
   {
     q: "Can I talk to a live model today?",
-    a: "Yes, in the signed-in playground. With AI_MOCK_MODE the reply is deterministic. Set a platform or workspace key and AI_MOCK_MODE=false to call OpenAI, Gemini, or Anthropic.",
+    a: "Yes. The signed-in playground and the public website widget both stream from the server. With AI_MOCK_MODE the reply is deterministic. Set a platform or workspace key and AI_MOCK_MODE=false to call OpenAI, Gemini, or Anthropic.",
   },
   {
     q: "How are secrets handled?",
@@ -68,8 +68,8 @@ export default function HomePage() {
             </h1>
             <p className="max-w-xl text-lg text-muted-foreground">
               ChatPilot AI gives businesses, stores, and agencies a workspace to create, train,
-              and deploy site chatbots. Phase 2 ships the builder and playground on top of the
-              identity and tenancy foundation.
+              and deploy site chatbots. Phase 4 ships the public website widget on top of the
+              builder, playground, and retrieval stack.
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Link href="/sign-up" className={cn(buttonVariants({ size: "lg" }))}>
@@ -196,7 +196,7 @@ export default function HomePage() {
           <h2 className="text-3xl font-semibold">Create your workspace</h2>
           <p className="mt-2 max-w-2xl text-primary-foreground/80">
             Register now to get a verified account, an isolated organization, and a Free plan
-            trial. Chatbot publishing waits for Phase 2.
+            trial. Publish a chatbot and embed it after you allowlist your website.
           </p>
           <Link
             href="/sign-up"

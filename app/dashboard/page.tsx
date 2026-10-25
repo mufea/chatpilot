@@ -30,7 +30,7 @@ export default async function DashboardPage() {
 
   const cards = [
     { label: "Chatbots", value: chatbotCount, hint: "Configure and play in Chatbots" },
-    { label: "Published", value: publishedCount, hint: "None until a bot is published" },
+    { label: "Published", value: publishedCount, hint: "Allowlist a domain to embed the widget" },
     { label: "Knowledge bases", value: knowledgeCount, hint: "Documents and URLs for retrieval" },
     { label: "Credit balance", value: creditAccount?.balance ?? 0, hint: "Welcome grant recorded in the ledger" },
   ];

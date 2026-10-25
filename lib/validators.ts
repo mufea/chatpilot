@@ -85,6 +85,15 @@ export const playMessageSchema = z.object({
   conversationId: z.string().optional(),
 });
 
+export const widgetPublicIdSchema = z.object({
+  publicId: z.string().trim().min(8).max(80),
+});
+
+export const widgetChatSchema = z.object({
+  publicId: z.string().trim().min(8).max(80),
+  message: z.string().trim().min(1).max(4000),
+});
+
 export const providerKeySchema = z.object({
   provider: z.enum(["openai", "gemini", "anthropic"]),
   apiKey: z.string().trim().min(8).max(500),

@@ -285,7 +285,11 @@ export function BuilderForm({
               name="allowedDomains"
               value={values.allowedDomains}
               onChange={(event) => set("allowedDomains", event.target.value)}
+              placeholder={"store.example.com\n127.0.0.1:43211"}
             />
+            <p className="text-xs text-muted-foreground">
+              The public widget only answers on these hosts. Leave empty to block every public embed.
+            </p>
           </Field>
           <label className="flex items-center gap-2 text-sm">
             <input
