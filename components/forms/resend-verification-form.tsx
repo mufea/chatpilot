@@ -5,7 +5,7 @@ import { resendVerificationAction } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
 import type { FormState } from "@/lib/validators";
 
-async function wrappedAction(prev: FormState, _formData: FormData): Promise<FormState> {
+async function wrappedAction(): Promise<FormState> {
   return resendVerificationAction();
 }
 
